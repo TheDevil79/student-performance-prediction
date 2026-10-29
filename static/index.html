@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Mathematics Performance Predictor | ML Assignment</title>
+  <meta name="description" content="Predict student final mathematics grade (0-20) based on social, demographic, and academic factors using a trained scikit-learn RandomForest pipeline.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="app-wrapper">
+    <!-- Header Banner -->
+    <header class="header">
+      <div class="header-container">
+        <div class="brand">
+          <div class="brand-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+              <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+            </svg>
+          </div>
+          <div>
+            <h1>Student Performance Predictor</h1>
+            <p class="subtitle">Machine Learning Math Grade Prediction (G3) &bull; UCI / Kaggle Dataset</p>
+          </div>
+        </div>
+        <div class="system-status" id="systemStatus">
+          <span class="status-dot pulsing"></span>
+          <span class="status-text" id="statusText">Checking API...</span>
+        </div>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Quick Demo Presets Banner -->
+      <section class="presets-section">
+        <div class="presets-label">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+          </svg>
+          <span>Quick Sample Profiles:</span>
+        </div>
+        <div class="preset-buttons">
+          <button type="button" class="btn-preset" id="presetHighAchiever">High Achiever</button>
+          <button type="button" class="btn-preset" id="presetAverage">Average Student</button>
+          <button type="button" class="btn-preset" id="presetAtRisk">At-Risk Student</button>
+          <button type="button" class="btn-preset btn-preset-clear" id="presetReset">Reset to Default</button>
+        </div>
+      </section>
+
+      <div class="grid-layout">
+        <!-- Input Form Column -->
+        <section class="form-container">
+          <form id="predictionForm" novalidate>
+            
+            <!-- Section 1: Demographics & School -->
+            <div class="card-section">
+              <div class="section-title">
+                <span class="step-num">1</span>
+                <h3>Student Demographics & School</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="school">School</label>
+                  <select id="school" name="school" required>
+                    <option value="GP">GP &mdash; Gabriel Pereira</option>
+                    <option value="MS">MS &mdash; Mousinho da Silveira</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="sex">Sex</label>
+                  <select id="sex" name="sex" required>
+                    <option value="F">Female (F)</option>
+                    <option value="M">Male (M)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="age">Age (15&ndash;22)</label>
+                  <input type="number" id="age" name="age" min="15" max="22" value="17" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="address">Address Type</label>
+                  <select id="address" name="address" required>
+                    <option value="U">Urban (U)</option>
+                    <option value="R">Rural (R)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="famsize">Family Size</label>
+                  <select id="famsize" name="famsize" required>
+                    <option value="GT3">&gt; 3 Members (GT3)</option>
+                    <option value="LE3">&le; 3 Members (LE3)</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Pstatus">Parent Cohabitation</label>
+                  <select id="Pstatus" name="Pstatus" required>
+                    <option value="T">Living Together (T)</option>
+                    <option value="A">Apart / Separated (A)</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 2: Family Background -->
+            <div class="card-section">
+              <div class="section-title">
+                <span class="step-num">2</span>
+                <h3>Family Background & Support</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="Medu">Mother's Education</label>
+                  <select id="Medu" name="Medu" required>
+                    <option value="4">4 &mdash; Higher Education</option>
+                    <option value="3">3 &mdash; Secondary Education</option>
+                    <option value="2">2 &mdash; 5th to 9th Grade</option>
+                    <option value="1">1 &mdash; Primary (4th Grade)</option>
+                    <option value="0">0 &mdash; None</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Fedu">Father's Education</label>
+                  <select id="Fedu" name="Fedu" required>
+                    <option value="4">4 &mdash; Higher Education</option>
+                    <option value="3">3 &mdash; Secondary Education</option>
+                    <option value="2">2 &mdash; 5th to 9th Grade</option>
+                    <option value="1">1 &mdash; Primary (4th Grade)</option>
+                    <option value="0">0 &mdash; None</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Mjob">Mother's Job</label>
+                  <select id="Mjob" name="Mjob" required>
+                    <option value="services">Civil Services</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="health">Healthcare</option>
+                    <option value="at_home">At Home</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Fjob">Father's Job</label>
+                  <select id="Fjob" name="Fjob" required>
+                    <option value="other">Other</option>
+                    <option value="services">Civil Services</option>
+                    <option value="teacher">Teacher</option>
+                    <option value="health">Healthcare</option>
+                    <option value="at_home">At Home</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="guardian">Guardian</label>
+                  <select id="guardian" name="guardian" required>
+                    <option value="mother">Mother</option>
+                    <option value="father">Father</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="reason">School Choice Reason</label>
+                  <select id="reason" name="reason" required>
+                    <option value="reputation">School Reputation</option>
+                    <option value="course">Course Preference</option>
+                    <option value="home">Close to Home</option>
+                    <option value="other">Other</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 3: Study Habits & Support -->
+            <div class="card-section">
+              <div class="section-title">
+                <span class="step-num">3</span>
+                <h3>Study Habits & Support</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="studytime">Weekly Study Time</label>
+                  <select id="studytime" name="studytime" required>
+                    <option value="1">1 &mdash; &lt; 2 hours</option>
+                    <option value="2" selected>2 &mdash; 2 to 5 hours</option>
+                    <option value="3">3 &mdash; 5 to 10 hours</option>
+                    <option value="4">4 &mdash; &gt; 10 hours</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="traveltime">Travel Time</label>
+                  <select id="traveltime" name="traveltime" required>
+                    <option value="1">&lt; 15 min</option>
+                    <option value="2">15 &ndash; 30 min</option>
+                    <option value="3">30 min &ndash; 1 hour</option>
+                    <option value="4">&gt; 1 hour</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="failures">Past Class Failures</label>
+                  <select id="failures" name="failures" required>
+                    <option value="0">0 Failures</option>
+                    <option value="1">1 Failure</option>
+                    <option value="2">2 Failures</option>
+                    <option value="3">3 Failures</option>
+                    <option value="4">4+ Failures</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="schoolsup">School Support (Extra)</label>
+                  <select id="schoolsup" name="schoolsup" required>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="famsup">Family Support</label>
+                  <select id="famsup" name="famsup" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="paid">Paid Math Classes</label>
+                  <select id="paid" name="paid" required>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 4: Academic Environment & Goals -->
+            <div class="card-section">
+              <div class="section-title">
+                <span class="step-num">4</span>
+                <h3>Goals, Environment & Activities</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="higher">Aims for Higher Education</label>
+                  <select id="higher" name="higher" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="internet">Internet Access at Home</label>
+                  <select id="internet" name="internet" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="activities">Extra-Curricular Activities</label>
+                  <select id="activities" name="activities" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="nursery">Attended Nursery School</label>
+                  <select id="nursery" name="nursery" required>
+                    <option value="yes">Yes</option>
+                    <option value="no">No</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="romantic">In Romantic Relationship</label>
+                  <select id="romantic" name="romantic" required>
+                    <option value="no">No</option>
+                    <option value="yes">Yes</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="absences">School Absences (0&ndash;93)</label>
+                  <input type="number" id="absences" name="absences" min="0" max="93" value="4" required>
+                </div>
+              </div>
+            </div>
+
+            <!-- Section 5: Lifestyle, Health & Social Life -->
+            <div class="card-section">
+              <div class="section-title">
+                <span class="step-num">5</span>
+                <h3>Health, Social Life & Lifestyle (Scale 1&ndash;5)</h3>
+              </div>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="famrel">Family Relationship Quality</label>
+                  <select id="famrel" name="famrel" required>
+                    <option value="5">5 &mdash; Excellent</option>
+                    <option value="4" selected>4 &mdash; Good</option>
+                    <option value="3">3 &mdash; Average</option>
+                    <option value="2">2 &mdash; Poor</option>
+                    <option value="1">1 &mdash; Very Bad</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="freetime">Free Time After School</label>
+                  <select id="freetime" name="freetime" required>
+                    <option value="3" selected>3 &mdash; Moderate</option>
+                    <option value="1">1 &mdash; Very Low</option>
+                    <option value="2">2 &mdash; Low</option>
+                    <option value="4">4 &mdash; High</option>
+                    <option value="5">5 &mdash; Very High</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="goout">Going Out with Friends</label>
+                  <select id="goout" name="goout" required>
+                    <option value="3" selected>3 &mdash; Moderate</option>
+                    <option value="1">1 &mdash; Very Low</option>
+                    <option value="2">2 &mdash; Low</option>
+                    <option value="4">4 &mdash; High</option>
+                    <option value="5">5 &mdash; Very High</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Dalc">Workday Alcohol</label>
+                  <select id="Dalc" name="Dalc" required>
+                    <option value="1" selected>1 &mdash; Very Low</option>
+                    <option value="2">2 &mdash; Low</option>
+                    <option value="3">3 &mdash; Moderate</option>
+                    <option value="4">4 &mdash; High</option>
+                    <option value="5">5 &mdash; Very High</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="Walc">Weekend Alcohol</label>
+                  <select id="Walc" name="Walc" required>
+                    <option value="1" selected>1 &mdash; Very Low</option>
+                    <option value="2">2 &mdash; Low</option>
+                    <option value="3">3 &mdash; Moderate</option>
+                    <option value="4">4 &mdash; High</option>
+                    <option value="5">5 &mdash; Very High</option>
+                  </select>
+                </div>
+
+                <div class="form-group">
+                  <label for="health">Current Health Status</label>
+                  <select id="health" name="health" required>
+                    <option value="5" selected>5 &mdash; Very Good</option>
+                    <option value="4">4 &mdash; Good</option>
+                    <option value="3">3 &mdash; Average</option>
+                    <option value="2">2 &mdash; Poor</option>
+                    <option value="1">1 &mdash; Very Bad</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Submit Button Area -->
+            <div class="form-actions">
+              <button type="submit" class="btn-submit" id="submitBtn">
+                <span class="btn-text">Predict Final Math Grade (G3)</span>
+                <span class="btn-spinner hidden" id="btnSpinner"></span>
+              </button>
+            </div>
+          </form>
+        </section>
+
+        <!-- Prediction Result Column -->
+        <aside class="result-container">
+          <div class="result-card" id="resultCard">
+            <div class="result-header">
+              <h2>Model Prediction Result</h2>
+              <span class="scale-badge">0&ndash;20 Portuguese Scale</span>
+            </div>
+
+            <!-- Placeholder State -->
+            <div class="result-placeholder" id="resultPlaceholder">
+              <div class="placeholder-icon">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                  <circle cx="12" cy="12" r="10"/>
+                  <path d="M12 6v6l4 2"/>
+                </svg>
+              </div>
+              <h4>Ready to Predict</h4>
+              <p>Fill out the 30 student attributes on the left or select a sample preset above, then click <strong>Predict Final Math Grade</strong>.</p>
+              <div class="features-note">
+                <span class="tag">Zero Data Leakage</span>
+                <span class="tag">G1 &amp; G2 Excluded</span>
+                <span class="tag">RandomForest Regressor</span>
+              </div>
+            </div>
+
+            <!-- Active Result State -->
+            <div class="result-active hidden" id="resultActive">
+              <div class="score-display">
+                <div class="score-circle">
+                  <span class="score-num" id="scoreNum">--</span>
+                  <span class="score-den">/ 20</span>
+                </div>
+                <div class="score-meta">
+                  <div class="tier-pill" id="tierPill">Loading...</div>
+                  <div class="rounded-pill">Rounded: <strong id="roundedGrade">--</strong></div>
+                </div>
+              </div>
+
+              <!-- Meter Bar -->
+              <div class="meter-wrapper">
+                <div class="meter-labels">
+                  <span>0 (Min)</span>
+                  <span>10 (Pass Cutoff)</span>
+                  <span>20 (Max)</span>
+                </div>
+                <div class="meter-track">
+                  <div class="meter-fill" id="meterFill" style="width: 0%;"></div>
+                  <div class="meter-threshold" style="left: 50%;"></div>
+                </div>
+              </div>
+
+              <!-- Academic Interpretation Box -->
+              <div class="interpretation-card">
+                <h4>Performance Interpretation</h4>
+                <p id="interpretationText">Evaluation details based on Portuguese secondary academic standards.</p>
+              </div>
+
+              <!-- Quick Summary Stats -->
+              <div class="summary-pills">
+                <div class="pill-item">
+                  <span class="pill-label">Model Type</span>
+                  <span class="pill-val">RandomForest</span>
+                </div>
+                <div class="pill-item">
+                  <span class="pill-label">Features Used</span>
+                  <span class="pill-val">30 Attributes</span>
+                </div>
+                <div class="pill-item">
+                  <span class="pill-label">Status</span>
+                  <span class="pill-val" id="inferenceStatus">Success</span>
+                </div>
+              </div>
+
+              <!-- Estimate Disclaimer -->
+              <div class="disclaimer-note" id="disclaimerNote">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                </svg>
+                <span>This is a <strong>statistical estimate</strong> based on demographic and social factors only (G1 &amp; G2 excluded). It is <strong>not a guaranteed grade</strong> and should be used for informational purposes only. Actual results depend on individual effort, teaching quality, and other variables not captured by this model.</span>
+              </div>
+            </div>
+
+            <!-- Error Banner -->
+            <div class="error-banner hidden" id="errorBanner">
+              <div class="error-icon">⚠️</div>
+              <div class="error-content">
+                <h4 id="errorTitle">Prediction Error</h4>
+                <p id="errorMessage">Unable to communicate with prediction service.</p>
+              </div>
+            </div>
+
+            <!-- Scale Reference Box -->
+            <div class="scale-info">
+              <h5>Portuguese Secondary Grading Reference:</h5>
+              <ul>
+                <li><span class="dot exc"></span> 16&ndash;20: Excellent / Distinction</li>
+                <li><span class="dot good"></span> 14&ndash;15: Good</li>
+                <li><span class="dot sat"></span> 12&ndash;13: Satisfactory</li>
+                <li><span class="dot pass"></span> 10&ndash;11: Sufficient (Passing grade)</li>
+                <li><span class="dot fail"></span> 0&ndash;9: Fail (Insufficient)</li>
+              </ul>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-container">
+        <p>Student Performance Prediction Assignment &bull; Built with FastAPI, scikit-learn &amp; Vanilla JavaScript</p>
+        <p class="api-links">
+          <a href="/docs" target="_blank" rel="noopener">Interactive Swagger API Docs (/docs)</a> &bull;
+          <a href="/health" target="_blank" rel="noopener">Health Endpoint (/health)</a>
+        </p>
+      </div>
+    </footer>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>

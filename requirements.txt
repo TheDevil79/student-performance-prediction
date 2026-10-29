@@ -1,0 +1,14 @@
+# Student Performance Prediction - Runtime Dependencies
+# Pinned to exact versions verified on Python 3.11 / python:3.11-slim.
+# uvicorn (plain, no [standard]) avoids httptools/uvloop compilation inside Docker.
+fastapi==0.141.1
+uvicorn==0.52.3
+pydantic==2.13.4
+pandas==2.3.3
+scikit-learn==1.9.0
+joblib==1.5.3
+numpy==2.3.4
+
+# Testing - NOT installed in Docker (see Dockerfile)
+pytest==9.1.1
+httpx==0.28.1

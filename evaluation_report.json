@@ -1,0 +1,76 @@
+{
+  "timestamp": "2026-10-29T13:57:53.162022+00:00",
+  "dataset": {
+    "source": "Kaggle Student Performance (student-mat.csv)",
+    "total_samples": 395,
+    "train_samples": 316,
+    "test_samples": 79,
+    "features_count": 30,
+    "excluded_features": [
+      "G1",
+      "G2",
+      "G3"
+    ],
+    "categorical_features": [
+      "school",
+      "sex",
+      "address",
+      "famsize",
+      "Pstatus",
+      "Mjob",
+      "Fjob",
+      "reason",
+      "guardian",
+      "schoolsup",
+      "famsup",
+      "paid",
+      "activities",
+      "nursery",
+      "higher",
+      "internet",
+      "romantic"
+    ],
+    "numerical_features": [
+      "age",
+      "Medu",
+      "Fedu",
+      "traveltime",
+      "studytime",
+      "failures",
+      "famrel",
+      "freetime",
+      "goout",
+      "Dalc",
+      "Walc",
+      "health",
+      "absences"
+    ],
+    "target": "G3"
+  },
+  "model": {
+    "type": "RandomForestRegressor",
+    "pipeline": "ColumnTransformer(OneHotEncoder + StandardScaler) + RandomForestRegressor",
+    "hyperparameters": {
+      "n_estimators": 150,
+      "max_depth": 12,
+      "min_samples_split": 4,
+      "min_samples_leaf": 2,
+      "random_state": 42
+    }
+  },
+  "metrics": {
+    "test": {
+      "MAE": 3.0828,
+      "RMSE": 3.8638,
+      "R2": 0.2719
+    },
+    "train": {
+      "MAE": 1.3694,
+      "RMSE": 1.8747,
+      "R2": 0.8327
+    },
+    "cross_validation": {
+      "5_fold_cv_mae": 3.1884
+    }
+  }
+}

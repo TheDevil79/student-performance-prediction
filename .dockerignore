@@ -1,0 +1,26 @@
+# Git
+.git
+.gitignore
+
+# Python cache & virtual environments
+__pycache__
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv/
+ENV/
+
+# Testing & Coverage
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Local developer shims / temporary files
+powershell.cmd
+Maths.csv
+Portuguese.csv
+scratch/
+*.log
